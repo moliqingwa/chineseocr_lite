@@ -2,10 +2,10 @@
 <project version="4">
   <component name="PublishConfigData" serverName="gpu">
     <serverData>
-      <paths name="gpu">
+      <paths name="root@localhost:8000">
         <serverdata>
           <mappings>
-            <mapping deploy="/mnt/data1/yanghuiyu/project/OCR/chinese_ocr2" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/data/chineseocr_lite" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
