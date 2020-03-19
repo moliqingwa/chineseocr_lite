@@ -66,7 +66,7 @@ def decode(preds, scale,
     for label_value in label_values:
         points = np.array(np.where(pred == label_value)).transpose((1, 0))[:, ::-1]
 
-        if points.shape[0] < 800 / (scale * scale):
+        if points.shape[0] < 300 / (scale * scale):
             continue
 
         score_i = np.mean(score[pred == label_value])

@@ -7,7 +7,6 @@ import torch.nn.functional as F
 from .resnet import resnet18, resnet34, resnet50, resnet101, resnet152
 from .mobilenetv2 import mobilenet_v2
 
-
 d = {'resnet18': {'model': resnet18, 'out': [64, 128, 256, 512]},
      'resnet34': {'model': resnet34, 'out': [64, 128, 256, 512]},
      'resnet50': {'model': resnet50, 'out': [256, 512, 1024, 2048]},
@@ -18,12 +17,11 @@ d = {'resnet18': {'model': resnet18, 'out': [64, 128, 256, 512]},
 
      }
 
-
 inplace = True
 
 
 class PSENet(nn.Module):
-    def __init__(self, backbone, result_num=6, scale: int = 1, pretrained=False ):
+    def __init__(self, backbone, result_num=6, scale: int = 1, pretrained=False):
         super(PSENet, self).__init__()
 
         assert backbone in d, 'backbone must in: {}'.format(d)
@@ -116,7 +114,6 @@ class PSENet(nn.Module):
         p5 = F.interpolate(p5, size=(h, w), mode='nearest')
 
         return p2 + p3 + p4 + p5
-
 
 
 if __name__ == '__main__':
