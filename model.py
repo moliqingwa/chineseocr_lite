@@ -100,7 +100,7 @@ def text_predict(img):
     preds, boxes_list, rects_re, t = text_handle.predict(img, long_size=pse_long_size)
 
     img2 = draw_bbox(img, boxes_list, color=(0, 255, 0))
-    cv2.imwrite("debug_im/draw.jpg", img2)
+    cv2.imwrite("debug_im/5.draw_bbox.jpg", img2)
 
     result = crnnRec(np.array(img), rects_re)
 

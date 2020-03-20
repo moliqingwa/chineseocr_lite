@@ -34,7 +34,7 @@ class OCR:
 
     def GET(self):
         post = {}
-        post['postName'] = 'ocr'  ##请求地址
+        post['postName'] = 'ocr'  # 请求地址
         post['height'] = 1000
         post['H'] = 1000
         post['width'] = 600
@@ -51,7 +51,7 @@ class OCR:
         # print(data)
         billModel = data.get('billModel', '')
         # textAngle = data.get('textAngle',False)##文字检测
-        textLine = data.get('textLine', False)  # 只进行单行识别
+        textLine = data.get('textLine', False)  ##只进行单行识别
 
         imgString = data['imgString'].encode().split(b';base64,')[-1]
         img = base64_to_PIL(imgString)
