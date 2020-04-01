@@ -25,12 +25,13 @@ def find_contours(img):
 
     temp, all_contours = img.copy(), []
     _, threshold = cv2.threshold(gray, 70, 255, cv2.THRESH_BINARY)
+    threshold = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)))
     cv2.imwrite('debug_im/2.binary.jpg', threshold)
     contours, hierarchy = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     for i, contour_ in enumerate(contours):
         x, y, w, h = cv2.boundingRect(contour_)
 
-        # -- check contour's width & height
+        # -- check contour's width & height & area
         if w < min_line_len or h < min_line_len or w >= min_border or h >= min_border:
             continue
 
@@ -200,31 +201,37 @@ if __name__ == "__main__":
           f"ignore_ratio={cnt_ignore}/{cnt_total} = {100*cnt_ignore/cnt_total: .2f}")
     '''
 
-    android_paths = []
+    img_paths = []
     for root, dirs, files in os.walk(b"/data/dataset/android"):
         for name in files:
             if name.endswith((b'.jpg', b'.jpeg', b'.png')):
-                name_ = name[: name.index(b'.')].decode('utf-8')
-                name_ = re.sub(r"\s*\(\d+\)$", "", name_)
-                phone_model = name_.split('_')[0]
-                browser = name_.split('_')[1] if len(name_.split('_')) > 1 else 'origin'
-                android_paths.append({
-                    'path': os.path.join(root.decode('utf-8'), name.decode('utf-8')),
-                    'phone_model': phone_model,
-                    'browser': browser,
-                })
+                img_paths.append(os.path.join(root.decode('utf-8'), name.decode('utf-8')))
         for name in dirs:
             for root_, _, files_ in os.walk(os.path.join(root, name)):
                 for name in files_:
-                    browser = root_.split(b'/')[-1]
                     if name.endswith((b'.jpg', b'.jpeg', b'.png')):
-                        name_ = name[: name.index(b'.')].decode('utf8')
-                        phone_model = re.sub(r"\s*\(\d+\)$", "", name_)
-                        android_paths.append({
-                            'path': os.path.join(root_.decode('utf8'), name.decode('utf8')),
-                            'phone_model': phone_model,
-                            'browser': browser.decode('utf8'),
-                        })
+                        img_paths.append(os.path.join(root_.decode('utf8'), name.decode('utf8')))
+    # img_paths = ['/data/dataset/android/华为 P9_Chrome.png', '/data/dataset/android/华为 P9_QQ.png', '/data/dataset/android/魅族 16th_qq.jpg', '/data/dataset/android/魅族 16th_yuansheng.jpg', '/data/dataset/android/红米7_qq.png', '/data/dataset/android/QQ/360 N6 Lite.png', '/data/dataset/android/QQ/360 N6 Lite.png']
+
+    android_paths = []
+    for path in img_paths:
+        name = path.split('/')[-1]
+        name_ = name[: name.index('.')]
+        name_ = re.sub(r"\s*\(\d+\)$", "", name_)
+        browser = 'origin'
+        if '_' in name_:
+            phone_model = name_.split('_')[0]
+            if len(name_.split('_')) > 1:
+                browser = name_.split('_')[1]
+        else:
+            phone_model = re.sub(r"\s*\(\d+\)$", "", name_)
+            if path.split('/')[-2] != 'android':
+                browser = path.split('/')[-2]
+        android_paths.append({
+            'path': path,
+            'phone_model': phone_model,
+            'browser': browser,
+        })
 
     cnt_success, cnt_ignore, cnt_total = 0, 0, len(android_paths)
     for i, pd in enumerate(android_paths):
@@ -233,7 +240,7 @@ if __name__ == "__main__":
         browser = pd['browser']
 
         if i > 0 and i % 50 == 0:
-            print(f"success_ratio={cnt_success}/{i} = {100*cnt_success/i: .2f}\t"
+            print(f"{i}/{cnt_total}\tsuccess_ratio={cnt_success}/{i} = {100*cnt_success/i: .2f}\t"
                   f"ignore_ratio={cnt_ignore}/{i} = {100*cnt_ignore/i: .2f}")
         try:
             is_success, d, _ = detect(imgpath, phone_model, browser)
